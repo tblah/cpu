@@ -8,3 +8,4 @@ ALU
 Registers
 *.core
 ProgramCounter
+Decoder

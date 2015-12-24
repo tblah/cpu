@@ -20,8 +20,8 @@ import Chisel._
 
 // possible values for control signals
 object ALUops {
-    val numOpts = 9
-    val loadA :: loadB :: add :: sub :: and :: or :: xor :: notA :: notB :: Nil = Range(0, numOpts).toList
+    val numOpts = 10
+    val loadA :: loadB :: add :: sub :: and :: or :: xor :: notA :: notB :: nop :: Nil = Range(0, numOpts).toList
 }
 
 // ALU flags interface
@@ -72,6 +72,9 @@ class ALU (wordSize: Int) extends Module {
         is (UInt(ALUops.notB)) {
             io.result := ~io.dataB
         } 
+        is (UInt(ALUops.nop)) {
+            io.result := UInt(0)
+        }
     }
 
     // work out io.flags.zero
@@ -151,6 +154,12 @@ class ALUtests (dut: ALU) extends Tester(dut) {
     step(1)
     expect( dut.io.result, 0xff9b ) // this will break if you change the testWordSize!!
     expect( dut.io.flags.zero, 0 )
+
+    // nop
+    poke( dut.io.control, ALUops.nop )
+    step(1)
+    expect( dut.io.result, 0 )
+    expect( dut.io.flags.zero, 1 )
 }
 
 // boilerplate

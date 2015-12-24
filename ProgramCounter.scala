@@ -25,21 +25,23 @@ object PCmodes {
     val increment :: relativeJump :: absoluteJump :: Nil = Range(0, numOpts).toList
 }
 
-// interface
-class PCIO(pcSize: Int = 16) extends Bundle {
-    val mode = UInt(INPUT, log2Up(PCmodes.numOpts))   
+// interface to instruction memory
+class pcToInsruct(pcSize: Int = 16) extends Bundle {
     val branchAddr = UInt(INPUT, pcSize)
     val pcOut = UInt(OUTPUT, pcSize)
 }
 
 // implementation
 class ProgramCounter(pcSize: Int = 16) extends Module {
-    val io = new PCIO(pcSize)
+    val io = new Bundle {
+        val mode = UInt(INPUT, log2Up(PCmodes.numOpts))
+        val instruct = new pcToInsruct(pcSize)
+    }
 
     // register
     val pcNext = UInt(width=pcSize)
     val PC = Reg(outType=UInt(width=pcSize), next = pcNext, init = UInt(0))
-    io.pcOut := PC
+    io.instruct.pcOut := PC
 
     // default that should never happen
     pcNext := UInt(0)
@@ -47,13 +49,13 @@ class ProgramCounter(pcSize: Int = 16) extends Module {
     // things that should actually happen
     switch (io.mode) {
         is (UInt(PCmodes.increment)) {
-            pcNext := io.pcOut + UInt(1)
+            pcNext := io.instruct.pcOut + UInt(1)
         }
         is (UInt(PCmodes.relativeJump)) {
-            pcNext := io.pcOut + io.branchAddr
+            pcNext := io.instruct.pcOut + io.instruct.branchAddr
         }
         is (UInt(PCmodes.absoluteJump)) {
-            pcNext := io.branchAddr
+            pcNext := io.instruct.branchAddr
         }
     }
 }
@@ -61,24 +63,24 @@ class ProgramCounter(pcSize: Int = 16) extends Module {
 // testbench
 class PCtests (dut: ProgramCounter) extends Tester(dut) {
     // do we start with PC = 0
-    expect( dut.io.pcOut, 0)
+    expect( dut.io.instruct.pcOut, 0)
 
     // increment the PC
     poke( dut.io.mode, PCmodes.increment )
     step(1)
-    expect( dut.io.pcOut, 1)
+    expect( dut.io.instruct.pcOut, 1)
 
     // relative jump
-    poke( dut.io.branchAddr, 2 )
+    poke( dut.io.instruct.branchAddr, 2 )
     poke( dut.io.mode, PCmodes.relativeJump)
     step(1)
-    expect( dut.io.pcOut, 3 )
+    expect( dut.io.instruct.pcOut, 3 )
 
     // absolute jump
-    poke( dut.io.branchAddr, 2 )
+    poke( dut.io.instruct.branchAddr, 2 )
     poke( dut.io.mode, PCmodes.absoluteJump)
     step(1)
-    expect( dut.io.pcOut, 2 ) 
+    expect( dut.io.instruct.pcOut, 2 ) 
 }
 
 // boilerplate
