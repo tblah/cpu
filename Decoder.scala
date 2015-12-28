@@ -20,8 +20,8 @@ import Chisel._
 
 // instructions
 object opcodes {
-    val numOps = 15
-    val nop :: add :: addi :: sub :: subi :: and :: andi :: or :: ori :: xor :: xori :: not :: ldi :: jr :: ji :: Nil = Range(0, numOps).toList
+    val numOps = 16
+    val nop :: add :: addi :: sub :: subi :: and :: andi :: or :: ori :: xor :: xori :: not :: ld :: ldi:: jr :: ji :: Nil = Range(0, numOps).toList
 }
 
 class Decoder (opcodeSize: Int = 4, pcSize: Int = 16) extends Module {
@@ -81,6 +81,9 @@ class Decoder (opcodeSize: Int = 4, pcSize: Int = 16) extends Module {
         }
         is (UInt(opcodes.not)) {
             io.aluControl := UInt(ALUops.notA)
+        }
+        is (UInt(opcodes.ld)) {
+            io.registersWriteEnable := Bool(true)
         }
         is (UInt(opcodes.ldi)) {
             io.aluControl := UInt(ALUops.loadB)
