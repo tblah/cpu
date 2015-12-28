@@ -32,6 +32,7 @@ class Decoder ( pcSize: Int = 16) extends Module {
         val aluFlags = new ALUflags().flip
         val registersWriteEnable = Bool(OUTPUT)
         val immediate = Bool(OUTPUT)
+        val longArg = Bool(OUTPUT)
     }
 
     // default values
@@ -39,6 +40,7 @@ class Decoder ( pcSize: Int = 16) extends Module {
     io.aluControl := UInt(ALUops.nop)
     io.registersWriteEnable := Bool(false)
     io.immediate := Bool(false)
+    io.longArg := Bool(false)
 
     switch (io.opcode) {
         is (UInt(opcodes.nop)) {
@@ -88,12 +90,15 @@ class Decoder ( pcSize: Int = 16) extends Module {
         is (UInt(opcodes.ldi)) {
             io.aluControl := UInt(ALUops.loadB)
             io.immediate := Bool(true)
+            io.longArg := Bool(true)
         }
         is (UInt(opcodes.jr)) {
             io.pcControl := UInt(PCmodes.relativeJump)
+            io.longArg := Bool(true)
         }
         is (UInt(opcodes.ji)) {
             io.pcControl := UInt(PCmodes.absoluteJump)
+            io.longArg := Bool(true)
         }
     }
 }

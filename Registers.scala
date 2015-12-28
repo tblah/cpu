@@ -42,10 +42,12 @@ class Registers (wordSize: Int = 8, addressSize: Int = 5) extends Module {
         val write = new registerWriteChannel(wordSize, addressSize)
     }
     val numAddresses = scala.math.pow(2, addressSize).round.toInt // integer to the power integer should always be a whole number. I am willing to assume that the representation of a double is accurate ot one decimal place so that the rounding is done correctly
-    val mem = Mem(n = numAddresses, UInt(width = 8))
+    val mem = Mem(n = numAddresses, UInt(width = wordSize))
 
     // write
-    when (io.writeEnable) { mem(io.write.address) := io.write.data }
+    when (io.writeEnable) { 
+        mem(io.write.address) := io.write.data 
+    }
   
     // read
     io.read1.data := UInt(0)

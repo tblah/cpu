@@ -1,6 +1,6 @@
 picomips
 
-Implementation of picomips in scala. This work is licenced under the GPLv3 or any later version of the GPL as published by the Free Software Foundaiton (https://fsf.org). 
+Implementation of a very simple cpu in scala. The cpu design was slightly inspired by picomips. This work is licenced under the GPLv3 or any later version of the GPL as published by the Free Software Foundaiton (https://fsf.org). 
 
 A copy of the GPLv3 is provided in the LICENCE file.
 
@@ -18,7 +18,7 @@ The instruction length is configurable: the number of bits for the opcode is the
 The opcodes are described below. See Decoder.scala for the opcodes object.
 
 ## nop
-Does nothing...well not quite, as it would be undesirable for he ALU to have an extra register or latch on it's output, the value in the accumulator will be lost after a nop.
+Does nothing.
 
 ## ld
 This saves whatever the output of the ALU is to the general purpose register addressed in the argument. In this way the output of the ALU should be thought of as an accumulator. 
@@ -31,24 +31,24 @@ Perform the named operation on two integers, the two arguments are addresses of 
 
 ## addressed addition example 
 // load 
-ldi 4 // load immediate value 4 into address 0
-ld 0
-
-ldi 5 // load immediate value 5 into address 1
+ldi 4 // load immediate value 4 into address 1
 ld 1
 
-add 0 1 // do the addition
-ld 0 // save the result in address 0. This result will be 5+4=9
+ldi 5 // load immediate value 5 into address 2
+ld 2
+
+add 1 2 // do the addition
+ld 1 // save the result in address 1. This result will be 5+4=9
 
 ## addi, subi, ori, xori
 Perform the named operatoin on two integers. One is addressed and another is loaded directly. The address to be loaded is given as the first arguement and the immediate value (note that this must be no larger than a general purpose regsiter address) is given as the second arguement. The result goes to the output of the ALU and should be saved on the next clock cycle using ld. These instructions allow clock cycles to be saved when only operating on small numbers.
 
 ## imediate decrement example
-ldi 6 // load the number to be decremented into register 0
-ld 0
+ldi 6 // load the number to be decremented into register 1
+ld 1
 
-subi 0 1
-ld 0 // save into register 0
+subi 1 1
+ld 1 // save into register 1
 
 ## not
 Calculates the logical not of the addressed memory location and puts it on the ALU's output and puts it on the ALU's output

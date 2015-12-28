@@ -19,14 +19,25 @@ package picomipscpu
 import Chisel._
 
 // abstract representation of an instruction
-class Instruction( opcodeSize: Int, argSize: Int ) extends Bundle {
-    val opcode = UInt(width=opcodeSize)
-    val arg1 = UInt(width=argSize)
-    val arg2 = UInt(width=argSize)
+class Instruction( opcodeSize: Int = 5, argSize: Int = 5 ) extends Bundle {
+    val opcode = UInt(OUTPUT, width=opcodeSize)
+    val arg1 = UInt(OUTPUT, width=argSize)
+    val arg2 = UInt(OUTPUT, width=argSize)
+
+    // magic?? Without this we get the following error:
+    // Cannot auto-create constructor for picomipscpu.Instruction that requires arguments: List(int, int)
+    // Parameterized Bundle class picomipscpu.Instruction needs cloneType method
+    override def clone: this.type = {
+        val res = new Instruction()
+        res.opcode.dir = this.opcode.dir
+        res.arg1.dir = this.arg1.dir
+        res.arg2.dir = this.arg2.dir
+        res.asInstanceOf[this.type]
+    }
 }
 
-object Instruction {
-    def apply( opcodeSize: Int, argSize: Int, opcode: Int, arg1: Int, arg2: Int ) : Instruction = {
+object Instruction { // give arg2 then arg1 to make double length things easier to read
+    def apply( opcodeSize: Int, argSize: Int, opcode: Int, arg2: Int, arg1: Int ) : Instruction = {
         val ret = new Instruction( opcodeSize, argSize )
         ret.opcode := UInt(opcode)
         ret.arg1 := UInt(arg1)
@@ -40,14 +51,22 @@ class ProgramMemory( gprAddrLength: Int, pcLength: Int ) extends Module {
     val opcodeSize = log2Up( opcodes.numOps )
     val io = new Bundle {
         val address = UInt(INPUT, width=pcLength)
-        val out = new Instruction( log2Up(opcodes.numOps), gprAddrLength )
+        val out = new Instruction( opcodeSize, gprAddrLength )
     }
 
     val programText = Array( // imediate decrement example from README
-        Instruction(opcodeSize, gprAddrLength, opcodes.ldi, 0, 6),
-        Instruction(opcodeSize, gprAddrLength, opcodes.ld, 0, 0),
-        Instruction(opcodeSize, gprAddrLength, opcodes.subi, 0, 1),
-        Instruction(opcodeSize, gprAddrLength, opcodes.ld, 0, 0)
+        Instruction(opcodeSize, gprAddrLength, opcodes.ldi, 30, 30),
+        Instruction(opcodeSize, gprAddrLength, opcodes.ld, 0, 1),
+        Instruction(opcodeSize, gprAddrLength, opcodes.subi, 1, 1),
+        Instruction(opcodeSize, gprAddrLength, opcodes.ld, 0, 1), // end of that
+
+        Instruction(opcodeSize, gprAddrLength, opcodes.ldi, 20, 30), // addressed addition aexample
+        Instruction(opcodeSize, gprAddrLength, opcodes.ld, 0, 1),
+        Instruction(opcodeSize, gprAddrLength, opcodes.ldi, 10, 0),
+        Instruction(opcodeSize, gprAddrLength, opcodes.ld, 0, 2),
+        Instruction(opcodeSize, gprAddrLength, opcodes.add, 1, 2),
+        Instruction(opcodeSize, gprAddrLength, opcodes.ld, 0, 1), // end of that
+        Instruction(opcodeSize, gprAddrLength, opcodes.ji, 0, 0) // uncondiitonal jump
     )
 
     val rom = Vec( programText )

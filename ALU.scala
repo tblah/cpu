@@ -39,35 +39,34 @@ class ALU (wordSize: Int) extends Module {
         val result = UInt( OUTPUT, wordSize )
         val flags = new ALUflags()
     }
-
-    // default values
-    io.result := UInt(0)
+    val acc = Reg(UInt(width=wordSize))
+    io.result := acc
 
     // work out io.result
     switch (io.control) {
         is (UInt(ALUops.loadB)) {
-            io.result := io.dataB
+            acc := io.dataB
         } 
         is (UInt(ALUops.add)) {
-            io.result := io.dataA + io.dataB
+            acc := io.dataA + io.dataB
         } 
         is (UInt(ALUops.sub)) {
-            io.result := io.dataA - io.dataB
+            acc := io.dataA - io.dataB
         } 
         is (UInt(ALUops.and)) {
-            io.result := io.dataA & io.dataB
+            acc := io.dataA & io.dataB
         } 
         is (UInt(ALUops.or)) {
-            io.result := io.dataA | io.dataB
+            acc := io.dataA | io.dataB
         } 
         is (UInt(ALUops.xor)) {
-            io.result := io.dataA ^ io.dataB
+            acc := io.dataA ^ io.dataB
         } 
         is (UInt(ALUops.notA)) {
-            io.result := ~io.dataA
+            acc := ~io.dataA
         } 
         is (UInt(ALUops.nop)) {
-            io.result := UInt(0)
+            // do nothing   
         }
     }
 

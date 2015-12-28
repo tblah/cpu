@@ -9,3 +9,4 @@ Registers
 *.core
 ProgramCounter
 Decoder
+CPU
