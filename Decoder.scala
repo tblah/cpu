@@ -24,11 +24,11 @@ object opcodes {
     val nop :: add :: addi :: sub :: subi :: and :: andi :: or :: ori :: xor :: xori :: not :: ld :: ldi:: jr :: ji :: Nil = Range(0, numOps).toList
 }
 
-class Decoder (opcodeSize: Int = 4, pcSize: Int = 16) extends Module {
+class Decoder ( pcSize: Int = 16) extends Module {
     val io = new Bundle {
-        val opcode =  UInt(INPUT, opcodes.numOps)
-        val pcControl = UInt(OUTPUT, PCmodes.numOpts)
-        val aluControl = UInt(OUTPUT, ALUops.numOpts)
+        val opcode =  UInt(INPUT, log2Up(opcodes.numOps) )
+        val pcControl = UInt(OUTPUT, log2Up(PCmodes.numOpts))
+        val aluControl = UInt(OUTPUT, log2Up(ALUops.numOpts))
         val aluFlags = new ALUflags().flip
         val registersWriteEnable = Bool(OUTPUT)
         val immediate = Bool(OUTPUT)

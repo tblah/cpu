@@ -36,10 +36,11 @@ object Instruction {
 }
 
 // implementation
-class ProgramMemory( opcodeSize: Int, gprAddrLength: Int, pcLength: Int ) extends Module {
-    var io = new Bundle {
+class ProgramMemory( gprAddrLength: Int, pcLength: Int ) extends Module {
+    val opcodeSize = log2Up( opcodes.numOps )
+    val io = new Bundle {
         val address = UInt(INPUT, width=pcLength)
-        val out = new Instruction( opcodeSize, gprAddrLength )
+        val out = new Instruction( log2Up(opcodes.numOps), gprAddrLength )
     }
 
     val programText = Array( // imediate decrement example from README
