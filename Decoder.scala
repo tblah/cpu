@@ -1,7 +1,4 @@
 // Instruction decoder
-// first version with not many instructions
-// TODO enough instructions for all the stuff the rest of the cpu can do
-// piplining
 
 /*  This file is part of picomips-cpu.
 
@@ -23,8 +20,8 @@ import Chisel._
 
 // instructions
 object opcodes {
-    val numOps = 8
-    val nop :: add :: addi :: sub :: subi :: ldi :: jr :: ji :: Nil = Range(0, numOps).toList
+    val numOps = 15
+    val nop :: add :: addi :: sub :: subi :: and :: andi :: or :: ori :: xor :: xori :: not :: ldi :: jr :: ji :: Nil = Range(0, numOps).toList
 }
 
 class Decoder (opcodeSize: Int = 4, pcSize: Int = 16) extends Module {
@@ -60,6 +57,30 @@ class Decoder (opcodeSize: Int = 4, pcSize: Int = 16) extends Module {
         is (UInt(opcodes.subi)) {
             io.aluControl := UInt(ALUops.sub)
             io.immediate := Bool(true)
+        }
+        is (UInt(opcodes.and)) {
+            io.aluControl := UInt(ALUops.and)
+        }
+        is (UInt(opcodes.andi)) {
+            io.aluControl := UInt(ALUops.and)
+            io.immediate := Bool(true)
+        }
+        is (UInt(opcodes.or)) {
+            io.aluControl := UInt(ALUops.or)
+        }
+        is (UInt(opcodes.ori)) {
+            io.aluControl := UInt(ALUops.or)
+            io.immediate := Bool(true)
+        }
+        is (UInt(opcodes.xor)) {
+            io.aluControl := UInt(ALUops.xor)
+        }
+        is (UInt(opcodes.xori)) {
+            io.aluControl := UInt(ALUops.xor)
+            io.immediate := Bool(true)
+        }
+        is (UInt(opcodes.not)) {
+            io.aluControl := UInt(ALUops.notA)
         }
         is (UInt(opcodes.ldi)) {
             io.aluControl := UInt(ALUops.loadB)

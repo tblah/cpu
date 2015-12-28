@@ -20,8 +20,8 @@ import Chisel._
 
 // possible values for control signals
 object ALUops {
-    val numOpts = 10
-    val loadA :: loadB :: add :: sub :: and :: or :: xor :: notA :: notB :: nop :: Nil = Range(0, numOpts).toList
+    val numOpts = 8
+    val loadB :: add :: sub :: and :: or :: xor :: notA :: nop :: Nil = Range(0, numOpts).toList
 }
 
 // ALU flags interface
@@ -45,9 +45,6 @@ class ALU (wordSize: Int) extends Module {
 
     // work out io.result
     switch (io.control) {
-        is (UInt(ALUops.loadA)) {
-            io.result := io.dataA
-        } 
         is (UInt(ALUops.loadB)) {
             io.result := io.dataB
         } 
@@ -69,9 +66,6 @@ class ALU (wordSize: Int) extends Module {
         is (UInt(ALUops.notA)) {
             io.result := ~io.dataA
         } 
-        is (UInt(ALUops.notB)) {
-            io.result := ~io.dataB
-        } 
         is (UInt(ALUops.nop)) {
             io.result := UInt(0)
         }
@@ -87,19 +81,12 @@ class ALU (wordSize: Int) extends Module {
 
 // testbench
 class ALUtests (dut: ALU) extends Tester(dut) {
-    // loadA
-    poke( dut.io.control, ALUops.loadA )
-    poke( dut.io.dataA, 10 )
+    // loadB
+    poke( dut.io.control, ALUops.loadB )
+    poke( dut.io.dataB, 10 )
     step(1)
     expect( dut.io.result, 10 )
     expect( dut.io.flags.zero, 0 )
-
-    // loadB
-    poke( dut.io.control, ALUops.loadB )
-    poke( dut.io.dataB, 0 )
-    step(1)
-    expect( dut.io.result, 0 )
-    expect( dut.io.flags.zero, 1 )
 
     // add
     poke( dut.io.control, ALUops.add )
@@ -144,13 +131,6 @@ class ALUtests (dut: ALU) extends Tester(dut) {
     // notA
     poke( dut.io.control, ALUops.notA )
     poke( dut.io.dataA, 100 )
-    step(1)
-    expect( dut.io.result, 0xff9b ) // this will break if you change the testWordSize!!
-    expect( dut.io.flags.zero, 0 )
-
-    // notB
-    poke( dut.io.control, ALUops.notB )
-    poke( dut.io.dataB, 100 )
     step(1)
     expect( dut.io.result, 0xff9b ) // this will break if you change the testWordSize!!
     expect( dut.io.flags.zero, 0 )
