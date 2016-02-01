@@ -1,18 +1,18 @@
-picomips
+# Simple CPU
 
 Implementation of a very simple cpu in scala. The cpu design was slightly inspired by picomips. This work is licenced under the GPLv3 or any later version of the GPL as published by the Free Software Foundaiton (https://fsf.org). 
 
 A copy of the GPLv3 is provided in the LICENCE file.
 
-# building
+# Building
 If you don't have scala and sbt working then check their project's websites or your distro's repos for packages.
 
 Once you have scala and sbt working, you can build and test the cpu by just running make
 
-# configuration
+# Configuration
 Configuration will be done by setting the parameters the CPU is instanced with. The wordsize should be double the address length of a general purpose register (for the ldi instruction).
 
-# instructions
+# Instructions
 The instruction length is configurable: the number of bits for the opcode is the logarithm to the base 2 of opcodes.numOps (rounded up). The operand is twice the length of the address of a general purpose register. All instructions are fixed length. If the second argument is not needed then some bits must still be there as padding. 
 
 The opcodes are described below. See Decoder.scala for the opcodes object.
