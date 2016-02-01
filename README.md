@@ -29,7 +29,8 @@ Instructs the ALU to load the immediate value (given as a single argument taking
 ## add, sub, or, xor
 Perform the named operation on two integers, the two arguments are addresses of registers to be added together. The result is placed on the output of the ALU (which should be thought of as the accumulator). This result can then be saved to a register on the next clock cycle using ld.
 
-## addressed addition example 
+## Addressed Addition Example 
+```
 // load 
 ldi 4 // load immediate value 4 into address 1
 ld 1
@@ -39,16 +40,19 @@ ld 2
 
 add 1 2 // do the addition
 ld 1 // save the result in address 1. This result will be 5+4=9
+```
 
 ## addi, subi, ori, xori
 Perform the named operatoin on two integers. One is addressed and another is loaded directly. The address to be loaded is given as the first arguement and the immediate value (note that this must be no larger than a general purpose regsiter address) is given as the second arguement. The result goes to the output of the ALU and should be saved on the next clock cycle using ld. These instructions allow clock cycles to be saved when only operating on small numbers.
 
 ## imediate decrement example
+```
 ldi 6 // load the number to be decremented into register 1
 ld 1
 
 subi 1 1
 ld 1 // save into register 1
+```
 
 ## not
 Calculates the logical not of the addressed memory location and puts it on the ALU's output and puts it on the ALU's output
