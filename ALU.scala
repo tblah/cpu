@@ -137,8 +137,8 @@ class ALUtests (dut: ALU) extends Tester(dut) {
     // nop
     poke( dut.io.control, ALUops.nop )
     step(1)
-    expect( dut.io.result, 0 )
-    expect( dut.io.flags.zero, 1 )
+    expect( dut.io.result, 0xff9b )
+    expect( dut.io.flags.zero, 0 )
 }
 
 // boilerplate
